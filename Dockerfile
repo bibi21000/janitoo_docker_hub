@@ -9,7 +9,7 @@ RUN /sbin/ip addr
 RUN apt-get update && \
     apt-get install -y build-essential libwrap0-dev libc-ares-dev python-dev && \
     apt-get dist-upgrade -y && \
-    apt-get install -y sudo openssh-server && \
+    apt-get install -y sudo openssh-server lxc iptables && \
     mkdir -p /var/run/sshd && \
     apt-get install -y sudo supervisor && \
     mkdir -p /var/log/supervisor && \
@@ -33,5 +33,7 @@ RUN make deps && \
 
 RUN sudo service docker restart && \
     make tests
+
+VOLUME /var/lib/docker
 
 CMD ["/usr/bin/supervisord", "--nodaemon"]
