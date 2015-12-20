@@ -175,8 +175,9 @@ travis-deps: deps
 tests:
 	@echo "Tests for ${MODULENAME} started."
 	@echo
+	ls -lisa /var/run
 	test -S /var/run/docker.sock
-	test -f /var/run/docker.pid
+	#test -f /var/run/docker.pid
 	@echo
 	@echo "Tests for ${MODULENAME} finished."
 
