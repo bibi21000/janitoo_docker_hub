@@ -27,9 +27,9 @@ ADD . /opt/janitoo/src/janitoo_docker_hub
 WORKDIR /opt/janitoo/src/janitoo_docker_hub
 
 RUN make deps && \
-    make develop && \
-    apt-get clean && \
-    [ -d /root/.cache ] && rm -Rf /root/.cache/*
+    make develop
+#    apt-get clean && \
+#    [ -d /root/.cache ] && rm -Rf /root/.cache/*
 
 RUN mkdir -p /var/log/docker
 RUN /usr/bin/supervisord && make tests
