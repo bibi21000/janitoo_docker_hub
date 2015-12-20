@@ -28,10 +28,10 @@ WORKDIR /opt/janitoo/src/janitoo_docker_hub
 
 RUN make deps && \
     make develop && \
-    mkdir -p /var/log/docker && \
     apt-get clean && \
     [ -d /root/.cache ] && rm -Rf /root/.cache/*
 
+RUN mkdir -p /var/log/docker
 RUN /usr/bin/supervisord && make tests
 
 VOLUME /var/lib/docker
