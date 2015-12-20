@@ -1,17 +1,13 @@
-============================
-Welcome to janitoo_mosquitto
-============================
+=============================
+Welcome to janitoo_docker_hub
+=============================
 
-As we need websockets support, we must install a recent version of mosquitto.
+This is the bootstrap module for thoses that want to develop with the docker image.
 
-This is the job of this module. It installs packages for Debian, Ubuntu and Raspdebian using method listed here : http://mosquitto.org/download/
+It sill install the last packages of docker using this method : https://docs.docker.com/engine/installation/ubuntulinux/ and https://docs.docker.com/engine/installation/debian/
 
 Configuration
 =============
 
-Websockets are listen on all addresses on port 9001. This is not secure.
 
-We must use https://www.nginx.com/blog/websocket-nginx/ in production.
-
-mqtt is on 1883.
 
