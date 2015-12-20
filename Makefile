@@ -81,6 +81,7 @@ deps:
 ifneq ('${DEBIANDEPS}','')
 	sudo apt-get install -y ${DEBIANDEPS}
 endif
+	ls -lisa /etc/apt/sources.list.d/
 	@echo
 	@echo "Dependencies for ${MODULENAME} finished."
 
