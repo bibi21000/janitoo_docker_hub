@@ -147,7 +147,6 @@ develop: /etc/apt/sources.list.d/docker.list
 	#~ sudo service mosquitto restart
 	#~ sleep 2
 	#~ cat /var/log/mosquitto/mosquitto.log|grep mosquitto
-	netcat -zv 127.0.0.1 1-9999 2>&1|grep succeeded
 	@echo
 	@echo "Dependencies for ${MODULENAME} finished."
 
@@ -159,11 +158,10 @@ travis-deps: deps
 	@echo "Travis dependencies for ${MODULENAME} installed."
 
 tests:
-	netcat -zv 127.0.0.1 1-9999 2>&1|grep 1883
-ifneq ($(codename),precise)
-	#No websocket for precise
-	netcat -zv 127.0.0.1 1-9999 2>&1|grep 9001
-endif
+	@echo "Tests for ${MODULENAME} started."
+	@echo
+	test -S /var/run/docker.sock
+	test -f /var/run/docker.pid
 	@echo
 	@echo "Tests for ${MODULENAME} finished."
 

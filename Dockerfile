@@ -31,4 +31,7 @@ RUN make deps && \
     apt-get clean && \
     [ -d /root/.cache ] && rm -Rf /root/.cache/*
 
+RUN sudo service docker restart && \
+    make tests
+
 CMD ["/usr/bin/supervisord", "--nodaemon"]
