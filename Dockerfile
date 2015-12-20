@@ -32,7 +32,7 @@ RUN make deps && \
     apt-get clean && \
     [ -d /root/.cache ] && rm -Rf /root/.cache/*
 
-RUN /usr/bin/supervisord && make tests-all
+RUN /usr/bin/supervisord && make tests
 
 VOLUME /var/lib/docker
 
