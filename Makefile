@@ -153,15 +153,6 @@ develop: docker_list
 	@echo
 	sudo apt-get update;
 	sudo apt-get install -y --force-yes docker-engine;
-#~ ifneq ($(codename),precise)
-	#~ #No websocket for precise
-	#~ sudo cp websockets.conf /etc/nginx/sites-available/
-#~ endif
-	#~ sudo cp mqtt.conf /etc/nginx/sites-available/
-	#~ cat /etc/mosquitto/mosquitto.conf
-	#~ sudo service mosquitto restart
-	#~ sleep 2
-	#~ cat /var/log/mosquitto/mosquitto.log|grep mosquitto
 	@echo
 	@echo "Dependencies for ${MODULENAME} finished."
 
@@ -175,7 +166,7 @@ travis-deps: deps
 tests:
 	@echo "Tests for ${MODULENAME} started."
 	@echo
-	ls -lisa /var/run
+	ls -lisa /var/run/
 	test -S /var/run/docker.sock
 	#test -f /var/run/docker.pid
 	@echo
