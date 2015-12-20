@@ -9,6 +9,7 @@ NOSE          = $(shell which nosetests)
 NOSEOPTS      = --verbosity=2
 PYLINT        = $(shell which pylint)
 PYLINTOPTS    = --max-line-length=140 --max-args=9 --extension-pkg-whitelist=zmq --ignored-classes=zmq --min-public-methods=0
+SHELL = /bin/bash
 
 ifndef PYTHON_EXEC
 PYTHON_EXEC=python
@@ -119,26 +120,39 @@ install: develop
 	@echo
 	@echo "Installation of ${MODULENAME} finished."
 
-/etc/apt/sources.list.d/docker.list:
+docker_list:
 	@echo
-	@echo "Installation for source for nginx ($(distro):$(codename))."
-	lsb_release -a
-	sudo apt-get purge -y lxc-docker* docker.io*
-	sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+	@echo "Installation for source for docker ($(distro):$(codename))."
+	@if [ -f /etc/apt/sources.list.d/docker.list ]; then \
+			echo "Source already installed"; \
+	 else \
+			echo "Retrieve keys for docker"; \
+			lsb_release -a; \
+			sudo apt-get purge -y lxc-docker* docker.io*; \
+			apt-key list|grep 2C52609D || sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D; \
+	 fi
 ifeq ($(distro),Debian)
-	echo "deb https://apt.dockerproject.org/repo debian-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list
+	@if [ -f /etc/apt/sources.list.d/docker.list ]; then \
+			echo "Source already installed"; \
+	 else \
+			echo "Add source for docker"; \
+			echo "deb https://apt.dockerproject.org/repo debian-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list; \
+	 fi
 endif
 ifeq ($(distro),Ubuntu)
-	echo "deb https://apt.dockerproject.org/repo ubuntu-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list
+	@if [ -f /etc/apt/sources.list.d/docker.list ]; then \
+			echo "Source already installed"; \
+	 else \
+			echo "Add source for docker"; \
+			echo "deb https://apt.dockerproject.org/repo ubuntu-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list; \
+	 fi
 endif
-	sudo apt-get update
-	sudo apt-get install -y --force-yes docker-engine
-	-sudo gpasswd -a ${USER} docker
-	sudo service docker restart
 
-develop: /etc/apt/sources.list.d/docker.list
+develop: docker_list
+	@echo "Install docker-engine for $(distro):$(codename)."
 	@echo
-	@echo "Install docker.io for $(distro):$(codename)."
+	sudo apt-get update;
+	sudo apt-get install -y --force-yes docker-engine;
 #~ ifneq ($(codename),precise)
 	#~ #No websocket for precise
 	#~ sudo cp websockets.conf /etc/nginx/sites-available/
