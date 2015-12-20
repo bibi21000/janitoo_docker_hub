@@ -136,7 +136,7 @@ ifeq ($(distro),Debian)
 			echo "Source already installed"; \
 	 else \
 			echo "Add source for docker"; \
-			echo "deb https://apt.dockerproject.org/repo debian-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list; \
+			echo "deb https://apt.dockerproject.org/repo debian-$(codename) main" | sudo tee /etc/apt/sources.list.d/docker.list; \
 	 fi
 endif
 ifeq ($(distro),Ubuntu)
@@ -144,7 +144,7 @@ ifeq ($(distro),Ubuntu)
 			echo "Source already installed"; \
 	 else \
 			echo "Add source for docker"; \
-			echo "deb https://apt.dockerproject.org/repo ubuntu-$(codename) main" | sudo tee -a /etc/apt/sources.list.d/docker.list; \
+			echo "deb https://apt.dockerproject.org/repo ubuntu-$(codename) main" | sudo tee /etc/apt/sources.list.d/docker.list; \
 	 fi
 endif
 
@@ -199,7 +199,7 @@ tar:
 	@echo
 	@echo "Archive for ${MODULENAME} version ${janitoo_version} created"
 
-commit: develop
+commit:
 	-git add rst/
 	-cp rst/README.rst .
 	-git add README.rst
