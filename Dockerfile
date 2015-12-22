@@ -10,6 +10,7 @@ RUN echo "janitoo\njanitoo" | passwd
 
 COPY docker/auto.sh /root/
 COPY docker/shell.sh /root/
+COPY docker/rescue.sh /root/
 COPY docker/supervisord.conf /etc/supervisord/
 COPY docker/supervisord.conf.d /etc/supervisord/
 
@@ -45,4 +46,4 @@ RUN /usr/bin/supervisord -c /etc/supervisord/supervisord.conf && make tests
 
 VOLUME /var/lib/docker
 
-CMD ["./docker/auto.sh"]
+CMD ["/root/auto.sh"]
