@@ -32,6 +32,9 @@ docker-conf:
 docker-run:
 	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
 
+docker-live:
+	sudo docker run -i -t ${DOCKEXP} ${DOCKIMG}
+
 docker-pull:
 	sudo docker pull ${DOCKIMG}
 

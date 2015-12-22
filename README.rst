@@ -85,7 +85,7 @@ You can launch it in foreground :
 
 .. code-block:: bash
 
-    make docker-run
+    make docker-live
 
 After some seconds, you should have :
 
@@ -93,6 +93,7 @@ After some seconds, you should have :
 
 You can check that ssh, mosquitto, nginx are running. Press Ctrl + C to stop it.
 
+You are ready to play with thr janitoo live demo. Please keep in minf that data will be lost on next update.
 
 First installation
 ==================
