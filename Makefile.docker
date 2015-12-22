@@ -1,0 +1,70 @@
+# Makefile for local
+#
+
+DOCKIMG := bibi21000/janitoo_stable
+
+-include Makefile.local
+
+#~ DOCKIP  := 127.0.0.1:
+DOCKID  := $(shell sudo docker ps|grep 8883|grep 8882|cut -d " " -f1)
+DOCKEXP := -p ${DOCKIP}8880:8080 -p ${DOCKIP}8881:8081 -p ${DOCKIP}8882:22 -p ${DOCKIP}8883:1883 -p ${DOCKIP}8884:9001 -p ${DOCKIP}8885:8085
+DOCKDIR := /opt/janitoo/docker
+DOCKPTH := /etc/nginx/conf.d/ /var/log/nginx/ /etc/mosquitto/ /var/data/mosquitto/ /var/log/mosquitto/ /etc/supervisord/ /var/log/supervisor/ /opt/janitoo/home/ /opt/janitoo/log/ /opt/janitoo/etc/
+DOCKVOL := -v $(DOCKDIR)/etc/nginx/conf.d/:/etc/nginx/conf.d/ -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
+	-v $(DOCKDIR)/etc/mosquitto/:/etc/mosquitto/ -v $(DOCKDIR)/var/data/mosquitto/:/var/data/mosquitto/ -v $(DOCKDIR)/var/log/mosquitto/:/var/log/mosquitto/ \
+	-v $(DOCKDIR)/var/log/supervisor/:/var/log/supervisor/ -v $(DOCKDIR)/etc/supervisord/:/etc/supervisord/ \
+	-v $(DOCKDIR)/opt/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/opt/janitoo/log/:/opt/janitoo/log/ -v $(DOCKDIR)/opt/janitoo/etc/:/opt/janitoo/etc/
+#~ DOCKVOL := -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
+	#~ -v $(DOCKDIR)/var/data/mosquitto/:/var/data/mosquitto/ -v $(DOCKDIR)/var/log/mosquitto/:/var/log/mosquitto/ \
+	#~ -v $(DOCKDIR)/var/log/supervisor/:/var/log/supervisor/ \
+	#~ -v $(DOCKDIR)/opt/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/opt/janitoo/log/:/opt/janitoo/log/
+
+docker-vols:
+	-mkdir -p $(DOCKDIR)
+	-for dir in $(DOCKPTH); do  mkdir -p $(DOCKDIR)/$$dir; done
+
+docker-conf:
+	-scp -r -P 8882 root@127.0.0.1:/etc/supervisord/* $(DOCKDIR)/etc/supervisord/
+	-scp -r -P 8882 root@127.0.0.1:/etc/nginx/* $(DOCKDIR)/etc/nginx/
+	-scp -r -P 8882 root@127.0.0.1:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
+	-scp -r -P 8882 root@127.0.0.1:/opt/janitoo/etc/* $(DOCKDIR)/opt/janitoo/etc/
+
+docker-run:
+	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
+
+docker-pull:
+	sudo docker pull ${DOCKIMG}
+
+docker-shell:
+	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG} /root/shell.sh
+
+docker-ps:
+	sudo docker ps
+
+docker-images:
+	sudo docker images
+
+docker-attach:
+	@echo "Attach container ID:${DOCKID}"
+	sudo docker attach ${DOCKID}
+
+docker-stop:
+	@echo "Stop container ID:${DOCKID}"
+	sudo docker stop ${DOCKID}
+
+docker-start:
+	sudo docker run -d -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
+
+docker-rescue:
+	sudo docker run -i -t ${DOCKIMG} /bin/bash
+
+~/.ssh/id_rsa.pub:
+	ssh-keygen -t rsa
+
+sshkey-generate: ~/.ssh/id_rsa.pub
+
+ssh:
+	ssh root@${DOCKIP} -p 8882
+
+sshkey-copy:
+	ssh-copy-id root@${DOCKIP} -p 8882

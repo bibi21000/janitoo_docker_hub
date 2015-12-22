@@ -1,1 +1,1 @@
-lsb-release netcat-openbsd apt-transport-https
+lsb-release netcat-openbsd apt-transport-https git

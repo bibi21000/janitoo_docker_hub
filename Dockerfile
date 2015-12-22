@@ -6,8 +6,15 @@ RUN cat /etc/issue
 RUN env
 RUN /sbin/ip addr
 
+RUN echo “root:janitoo” | chpasswd
+
+COPY docker/auto.sh /root/
+COPY docker/shell.sh /root/
+COPY docker/supervisord.conf /etc/supervisord/
+COPY docker/supervisord.conf.d /etc/supervisord/
+
 RUN apt-get update && \
-    apt-get install -y build-essential libwrap0-dev libc-ares-dev python-dev && \
+    apt-get install -y build-essential libwrap0-dev libc-ares-dev python2.7-dev git && \
     apt-get dist-upgrade -y && \
     apt-get install -y sudo openssh-server lxc iptables && \
     mkdir -p /var/run/sshd && \
@@ -15,8 +22,6 @@ RUN apt-get update && \
     mkdir -p /var/log/supervisor && \
     apt-get clean && \
     rm -Rf /root/.cache/*
-
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN mkdir /opt/janitoo && \
     for dir in src home log run etc init; do mkdir /opt/janitoo/$dir; done && \
@@ -27,13 +32,17 @@ ADD . /opt/janitoo/src/janitoo_docker_hub
 WORKDIR /opt/janitoo/src/janitoo_docker_hub
 
 RUN make deps && \
-    make develop
-#    apt-get clean && \
-#    [ -d /root/.cache ] && rm -Rf /root/.cache/*
+    make develop && \
+    apt-get clean
+
+RUN apt-get install -y python-pip lm-sensors && \
+    pip install psutil bottle batinfo https://bitbucket.org/gleb_zhulik/py3sensors/get/tip.tar.gz && \
+    git clone -b develop https://github.com/nicolargo/glances.git && \
+    rm -Rf /root/.cache/*
 
 RUN mkdir -p /var/log/docker
-RUN /usr/bin/supervisord && make tests
+RUN /usr/bin/supervisord -c /etc/supervisord/supervisord.conf && make tests
 
 VOLUME /var/lib/docker
 
-CMD ["/usr/bin/supervisord", "--nodaemon"]
+CMD ["./docker/auto.sh"]

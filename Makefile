@@ -48,6 +48,7 @@ release = $(shell lsb_release -a 2>/dev/null|grep Release|cut -f2 -d ":"|sed -e 
 codename = $(shell lsb_release -a 2>/dev/null|grep Codename|cut -f2 -d ":"|sed -e "s/\t//g" )
 
 -include Makefile.local
+-include Makefile.docker
 
 .PHONY: help check-tag clean all build develop install uninstall clean-doc doc certification tests pylint deps
 
@@ -120,7 +121,7 @@ install: develop
 	@echo
 	@echo "Installation of ${MODULENAME} finished."
 
-docker_list:
+docker_apt_list:
 	@echo
 	@echo "Installation for source for docker ($(distro):$(codename))."
 	@if [ -f /etc/apt/sources.list.d/docker.list ]; then \
@@ -146,13 +147,17 @@ ifeq ($(distro),Ubuntu)
 			echo "Add source for docker"; \
 			echo "deb https://apt.dockerproject.org/repo ubuntu-$(codename) main" | sudo tee /etc/apt/sources.list.d/docker.list; \
 	 fi
+	sudo apt-get update;
+	sudo apt-get install -y --force-yes docker-engine;
+	sudo gpasswd -a ${USER} docker
 endif
 
-develop: docker_list
+develop: docker_apt_list
 	@echo "Install docker-engine for $(distro):$(codename)."
 	@echo
 	sudo apt-get update;
 	sudo apt-get install -y --force-yes docker-engine;
+	-netcat -zv 127.0.0.1 1-9999 2>&1|grep succeeded
 	@echo
 	@echo "Dependencies for ${MODULENAME} finished."
 
@@ -166,9 +171,12 @@ travis-deps: deps
 tests:
 	@echo "Tests for ${MODULENAME} started."
 	@echo
-	ls -lisa /var/run/
-	test -S /var/run/docker.sock
-	#test -f /var/run/docker.pid
+	-sudo ls -lisa /var/run/
+	-test -S /var/run/docker.sock
+	-sudo docker images
+	-sudo docker ps
+	-sudo docker info
+	-sudo docker network ls
 	@echo
 	@echo "Tests for ${MODULENAME} finished."
 
