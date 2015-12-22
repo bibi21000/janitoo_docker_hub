@@ -6,7 +6,7 @@ RUN cat /etc/issue
 RUN env
 RUN /sbin/ip addr
 
-RUN echo “root:janitoo” | chpasswd
+RUN echo "janitoo\njanitoo" | passwd
 
 COPY docker/auto.sh /root/
 COPY docker/shell.sh /root/
