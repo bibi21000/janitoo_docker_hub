@@ -56,7 +56,7 @@ docker-start:
 	sudo docker run -d -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
 
 docker-rescue:
-	sudo docker run -i -t ${DOCKIMG} "/usr/sbin/sshd && /bin/bash"
+	sudo docker run -i -t ${DOCKIMG} /root/rescue.sh
 
 ~/.ssh/id_rsa.pub:
 	ssh-keygen -t rsa

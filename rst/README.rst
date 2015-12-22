@@ -91,13 +91,27 @@ After some seconds, you should have :
 
 .. image:: images/glances.png
 
-You can check that ssh, mosquitto, nginx are running.
+You can check that ssh, mosquitto, nginx are running. Press Ctrl + C to stop it.
 
 
 First installation
 ==================
 
-Open a new terminal to configure your installation (and let janitoo docker's image running in the first one) . First, if you don't have a ssh key, generate one :
+We need to launch janitoo in rescue mode to configure it :
+
+.. code-block:: bash
+
+    make docker-rescue
+
+
+A bash will arrived :
+
+.. code-block:: bash
+
+    root@28b4e9aff350:/opt/janitoo/src# passwd
+
+
+Open a new terminal letting janitoo docker's image running in the first one . At first, if you don't have a ssh key, generate one :
 
 .. code-block:: bash
 
@@ -133,7 +147,7 @@ We need to populate them with default configuration :
     make docker-conf
 
 
-Come back to the first terminal and stop the docker image pressing Ctrl + C to stop it. Restart it to check that your configuration is ok :
+Come back to the first terminal and stop the docker rescue image using exit. Restart it in normal mode to check that your configuration is ok :
 
 .. code-block:: bash
 
@@ -177,3 +191,4 @@ By default, the janitoo's image listen on all interface on ports :
  - 8884 : reserved
  - 8885 : http (git)
  - 8886 : http (www)
+
