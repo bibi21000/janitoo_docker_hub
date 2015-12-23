@@ -2,64 +2,108 @@
 #
 
 DOCKIMG := bibi21000/janitoo_stable
+DOCKIP  := 127.0.0.1
 
 -include Makefile.local
 
-#~ DOCKIP  := 127.0.0.1:
+ifdef DOCKIP
+DOCKIPF = ${DOCKIP}:
+endif
+
+DOCKCNT := $(shell cat .dockerinstance 2>/dev/null)
 DOCKID  := $(shell sudo docker ps|grep 8883|grep 8882|cut -d " " -f1)
-DOCKEXP := -p ${DOCKIP}8880:8080 -p ${DOCKIP}8881:8081 -p ${DOCKIP}8882:22 -p ${DOCKIP}8883:1883 -p ${DOCKIP}8884:9001 -p ${DOCKIP}8885:8085
+DOCKID2 := $(shell sudo docker ps|grep 1883|grep 22|cut -d " " -f1)
+DOCKEXP := -p ${DOCKIPF}8880:8080 -p ${DOCKIPF}8881:8081 -p ${DOCKIPF}8882:22 -p ${DOCKIPF}8883:1883 -p ${DOCKIPF}8884:9001 -p ${DOCKIPF}8885:8085
 DOCKDIR := /opt/janitoo/docker
-DOCKPTH := /etc/nginx/conf.d/ /var/log/nginx/ /etc/mosquitto/ /var/data/mosquitto/ /var/log/mosquitto/ /etc/supervisord/ /var/log/supervisor/ /opt/janitoo/home/ /opt/janitoo/log/ /opt/janitoo/etc/
-DOCKVOL := -v $(DOCKDIR)/etc/nginx/conf.d/:/etc/nginx/conf.d/ -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
+DOCKPTH := /root/.ssh /etc/nginx/conf.d/ /var/log/nginx/ /etc/mosquitto/ /var/data/mosquitto/ /var/log/mosquitto/ /etc/supervisord/ /var/log/supervisor/ /janitoo/home/ /janitoo/log/ /janitoo/etc/
+DOCKVOL := -v $(DOCKDIR)/root/.ssh/:/root/.ssh/ -v $(DOCKDIR)/etc/nginx/conf.d/:/etc/nginx/conf.d/ -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
 	-v $(DOCKDIR)/etc/mosquitto/:/etc/mosquitto/ -v $(DOCKDIR)/var/data/mosquitto/:/var/data/mosquitto/ -v $(DOCKDIR)/var/log/mosquitto/:/var/log/mosquitto/ \
 	-v $(DOCKDIR)/var/log/supervisor/:/var/log/supervisor/ -v $(DOCKDIR)/etc/supervisord/:/etc/supervisord/ \
-	-v $(DOCKDIR)/opt/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/opt/janitoo/log/:/opt/janitoo/log/ -v $(DOCKDIR)/opt/janitoo/etc/:/opt/janitoo/etc/
+	-v $(DOCKDIR)/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/janitoo/log/:/opt/janitoo/log/ -v $(DOCKDIR)/janitoo/etc/:/opt/janitoo/etc/
 #~ DOCKVOL := -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
 	#~ -v $(DOCKDIR)/var/data/mosquitto/:/var/data/mosquitto/ -v $(DOCKDIR)/var/log/mosquitto/:/var/log/mosquitto/ \
 	#~ -v $(DOCKDIR)/var/log/supervisor/:/var/log/supervisor/ \
-	#~ -v $(DOCKDIR)/opt/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/opt/janitoo/log/:/opt/janitoo/log/
+	#~ -v $(DOCKDIR)/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/janitoo/log/:/opt/janitoo/log/
 
 docker-vols:
+	@echo "Make locals volumes for docker"
 	-mkdir -p $(DOCKDIR)
 	-for dir in $(DOCKPTH); do  mkdir -p $(DOCKDIR)/$$dir; done
 
 docker-conf:
-	-scp -r -P 8882 root@127.0.0.1:/etc/supervisord/* $(DOCKDIR)/etc/supervisord/
-	-scp -r -P 8882 root@127.0.0.1:/etc/nginx/* $(DOCKDIR)/etc/nginx/
-	-scp -r -P 8882 root@127.0.0.1:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
-	-scp -r -P 8882 root@127.0.0.1:/opt/janitoo/etc/* $(DOCKDIR)/opt/janitoo/etc/
+	@echo "Retrieve configuration for container ID:${DOCKCNT}"
+	sudo docker start ${DOCKCNT} /root/rescue.sh
+	sleep 5
+	-scp -r -P 8882 root@${DOCKIP}:/root/.ssh/* $(DOCKDIR)/root/
+	-scp -r -P 8882 root@${DOCKIP}:/etc/supervisord/* $(DOCKDIR)/etc/supervisord/
+	-scp -r -P 8882 root@${DOCKIP}:/etc/nginx/* $(DOCKDIR)/etc/nginx/
+	-scp -r -P 8882 root@${DOCKIP}:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
+	-scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/etc/* $(DOCKDIR)/janitoo/etc/
+	sudo docker stop ${DOCKCNT}
+#~ docker-conf:
+	#~ @echo "Retrieve configuration from live container"
+	#~ sudo docker run -d -t ${DOCKEXP} ${DOCKIMG} /root/rescue.sh
+	#~ sleep 5
+	#~ -ssh-copy-id root@${DOCKIP} -p 8882
+	#~ -scp -r -P 8882 root@${DOCKIP}:/root/.ssh/* $(DOCKDIR)/root/.ssh/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/supervisord/* $(DOCKDIR)/etc/supervisord/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/nginx/* $(DOCKDIR)/etc/nginx/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/etc/* $(DOCKDIR)/janitoo/etc/
+	#~ sudo docker stop `sudo docker ps|grep 8883|grep 8882|cut -d " " -f1`
 
-docker-run:
-	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
+docker-create:
+	@echo "Create new container"
+	sudo docker create -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG} >.dockerinstance
+	@echo "Container `cat .dockerinstance` created"
+
+docker-purge:
+	-sudo docker rm -v $$(docker ps -a -q -f status=exited)
+	-sudo docker rm -v $$(docker ps -a -q -f status=created)
+	@echo "Docker containers purges"
 
 docker-live:
+	@echo "Start container in live mode. All your updates will be lost !!!"
 	sudo docker run -i -t ${DOCKEXP} ${DOCKIMG}
 
 docker-pull:
+	@echo "Pull image for ${DOCKIMG}"
 	sudo docker pull ${DOCKIMG}
 
 docker-shell:
-	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG} /root/shell.sh
+	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKCNT} /root/shell.sh
 
 docker-ps:
-	sudo docker ps
+	sudo docker ps -a
 
 docker-images:
 	sudo docker images
 
 docker-attach:
-	@echo "Attach container ID:${DOCKID}"
-	sudo docker attach ${DOCKID}
+	@echo "Attach container ID:${DOCKCNT}"
+	sudo docker attach ${DOCKCNT}
 
 docker-stop:
-	@echo "Stop container ID:${DOCKID}"
-	sudo docker stop ${DOCKID}
+	@echo "Stop container ID:${DOCKID} / ${DOCKCNT}"
+	-sudo docker stop ${DOCKCNT}
+	-sudo docker stop ${DOCKID}
+
+docker-kill: docker-stop
+	@echo "Stop container ID:${DOCKID2}"
+	-sudo docker stop ${DOCKID2}
 
 docker-start:
-	sudo docker run -d -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG}
+	@echo "Start daemon mode for container ID:${DOCKCNT}"
+	sudo docker start ${DOCKCNT}
 
 docker-rescue:
-	sudo docker run -i -t ${DOCKIMG} /root/rescue.sh
+	@echo "Start rescue mode for container ID:${DOCKCNT}"
+	sudo docker start ${DOCKCNT} /root/rescue.sh
+
+/etc/sudoers.d/docker:
+	echo "${USER} ALL= NOPASSWD:/usr/bin/docker"|sudo tee /etc/sudoers.d/docker
+
+sudoers: /etc/sudoers.d/docker
 
 ~/.ssh/id_rsa.pub:
 	ssh-keygen -t rsa
@@ -70,4 +114,8 @@ ssh:
 	ssh root@${DOCKIP} -p 8882
 
 sshkey-copy:
-	ssh-copy-id root@${DOCKIP} -p 8882
+	@echo "Copy keys to container ID:${DOCKCNT}"
+	sudo docker start ${DOCKCNT} /root/rescue.sh
+	sleep 5
+	-ssh-copy-id root@${DOCKIP} -p 8882
+	sudo docker stop ${DOCKCNT}
