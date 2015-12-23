@@ -9,6 +9,13 @@ It will install the last packages of docker using this method : https://docs.doc
 Download
 ========
 
+Docker needs to be root so it is launch with sudo. You can bypass the password ask updating your sudoers configuration. Or use :
+
+.. code-block:: bash
+
+    make sudoers
+
+
 Update Makefile.local and pull an image. :
 
 .. code-block:: bash
