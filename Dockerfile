@@ -12,7 +12,8 @@ COPY docker/auto.sh /root/
 COPY docker/shell.sh /root/
 COPY docker/rescue.sh /root/
 COPY docker/supervisord.conf /etc/supervisord/
-COPY docker/supervisord.conf.d /etc/supervisord/
+COPY docker/supervisord.conf.d/ /etc/supervisord/supervisord.conf.d/
+
 
 RUN apt-get update && \
     apt-get install -y build-essential libwrap0-dev libc-ares-dev python2.7-dev git && \
