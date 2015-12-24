@@ -11,8 +11,7 @@ RUN echo "janitoo\njanitoo" | passwd
 COPY docker/auto.sh /root/
 COPY docker/shell.sh /root/
 COPY docker/rescue.sh /root/
-COPY docker/supervisord.conf /etc/supervisord/
-COPY docker/supervisord.conf.d/ /etc/supervisord/supervisord.conf.d/
+COPY docker/supervisord.conf /etc/supervisor/
 
 
 RUN apt-get update && \

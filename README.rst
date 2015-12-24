@@ -105,21 +105,7 @@ You are ready to play with thr janitoo live demo. Please keep in minf that data 
 First installation
 ==================
 
-We need to launch janitoo in rescue mode to configure it :
-
-.. code-block:: bash
-
-    make docker-rescue
-
-
-A bash will arrived :
-
-.. code-block:: bash
-
-    root@28b4e9aff350:/opt/janitoo/src# passwd
-
-
-Open a new terminal letting janitoo docker's image running in the first one . At first, if you don't have a ssh key, generate one :
+At first, if you don't have a ssh key, generate one :
 
 .. code-block:: bash
 
@@ -134,13 +120,6 @@ And publish it to janitoo :
     make sshkey-copy
 
 
-Test your connection with ssh :
-
-.. code-block:: bash
-
-    ssh root@${DOCKIP} -p 8882
-
-
 Docker needs some disk space to store data, configurations (also known as volumes). The followin will create them under /opt/janitoo/docker :
 
 .. code-block:: bash
@@ -148,7 +127,7 @@ Docker needs some disk space to store data, configurations (also known as volume
     make docker-vols
 
 
-We need to populate them with default configuration :
+We need to populate them with default configuration. Password will be asked many times, unless you're using ssh keys :
 
 .. code-block:: bash
 
@@ -200,3 +179,27 @@ By default, the janitoo's image listen on all interface on ports :
  - 8885 : http (git)
  - 8886 : http (www)
 
+Update it
+=========
+
+make sshkey-copy
+
+/usr/bin/ssh-copy-id:
+ERROR: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ERROR: @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+ERROR: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ERROR: IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+ERROR: Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+ERROR: It is also possible that a host key has just been changed.
+ERROR: The fingerprint for the ECDSA key sent by the remote host is
+ERROR: dc:81:44:73:5e:97:69:77:1c:20:91:6d:4a:71:33:72.
+ERROR: Please contact your system administrator.
+ERROR: Add correct host key in /home/xxxxxxxxxxxxxxxx/.ssh/known_hosts to get rid of this message.
+ERROR: Offending ECDSA key in /home/xxxxxxxxxxxxxxxx/.ssh/known_hosts:336
+ERROR:   remove with: ssh-keygen -f "/home/xxxxxxxxxxxxxxxxxxxx/.ssh/known_hosts" -R [127.0.0.1]:8882
+ERROR: ECDSA host key for [127.0.0.1]:8882 has changed and you have requested strict checking.
+ERROR: Host key verification failed.
+
+Make a copy paste :
+
+ssh-keygen -f "/home/xxxxxxxxxxx/.ssh/known_hosts" -R [127.0.0.1]:8882
