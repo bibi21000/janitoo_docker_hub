@@ -11,8 +11,6 @@ RUN echo "janitoo\njanitoo" | passwd
 COPY docker/auto.sh /root/
 COPY docker/shell.sh /root/
 COPY docker/rescue.sh /root/
-COPY docker/supervisord.conf /etc/supervisor/
-
 
 RUN apt-get update && \
     apt-get install -y build-essential libwrap0-dev libc-ares-dev python2.7-dev git && \
@@ -23,6 +21,8 @@ RUN apt-get update && \
     mkdir -p /var/log/supervisor && \
     apt-get clean && \
     rm -Rf /root/.cache/*
+
+COPY docker/supervisord.conf /etc/supervisor/
 
 RUN mkdir /opt/janitoo && \
     for dir in src home log run etc init; do mkdir /opt/janitoo/$dir; done && \
