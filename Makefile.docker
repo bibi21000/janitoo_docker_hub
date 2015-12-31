@@ -88,6 +88,10 @@ docker-start:
 	@echo "Start daemon mode for container ID:${DOCKCNT}"
 	sudo docker start ${DOCKCNT}
 
+docker-top:
+	@echo "Show top container ID:${DOCKCNT}"
+	sudo docker top ${DOCKCNT}
+
 docker-rescue:
 	@echo "Start rescue mode for container ID:${DOCKCNT}"
 	sudo docker start ${DOCKCNT} /root/rescue.sh
@@ -107,7 +111,8 @@ ssh:
 
 sshkey-copy:
 	@echo "Copy keys to container ID:${DOCKCNT}"
-	sudo docker start ${DOCKCNT}
-	sleep 5
+	#sudo docker start ${DOCKCNT}
+	-ssh-keygen -f ~/.ssh/known_hosts -R [${DOCKIP}]:8882
+	#sleep 5
 	-ssh-copy-id root@${DOCKIP} -p 8882
-	sudo docker stop ${DOCKCNT}
+	#sudo docker stop ${DOCKCNT}
