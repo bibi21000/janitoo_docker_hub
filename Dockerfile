@@ -42,7 +42,7 @@ RUN apt-get install -y python-pip lm-sensors && \
     rm -Rf /root/.cache/*
 
 RUN mkdir -p /var/log/docker
-RUN /usr/bin/supervisord -c /etc/supervisord/supervisord.conf && make tests
+RUN /usr/bin/supervisord -c /etc/supervisor/supervisord.conf && make tests
 
 VOLUME /var/lib/docker
 
