@@ -13,7 +13,7 @@ endif
 DOCKCNT := $(shell cat .dockerinstance 2>/dev/null)
 DOCKID  := $(shell sudo docker ps|grep 8883|grep 8882|cut -d " " -f1)
 DOCKID2 := $(shell sudo docker ps|grep 1883|grep 22|cut -d " " -f1)
-DOCKEXP := -p ${DOCKIPF}8880:8880 -p ${DOCKIPF}8881:8081 -p ${DOCKIPF}8882:22 -p ${DOCKIPF}8883:1883 -p ${DOCKIPF}8884:9001 -p ${DOCKIPF}8885:8085
+DOCKEXP := -p ${DOCKIPF}8880:8880 -p ${DOCKIPF}8881:8081 -p ${DOCKIPF}8882:22 -p ${DOCKIPF}8883:1883 -p ${DOCKIPF}8884:9001 -p ${DOCKIPF}8885:8085 -p ${DOCKIPF}8886:8086
 DOCKDIR := /opt/janitoo/docker
 DOCKPTH :=  /var/log/ /root/.ssh /etc/nginx/conf.d/ /etc/mosquitto/ /var/lib/mosquitto/ /etc/supervisor/ /janitoo/home/ /janitoo/etc/
 DOCKVOL := -v $(DOCKDIR)/root/.ssh/:/root/.ssh/ -v $(DOCKDIR)/var/log/:/var/log/ -v $(DOCKDIR)/etc/nginx/conf.d/:/etc/nginx/conf.d/ \
