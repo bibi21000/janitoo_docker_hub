@@ -45,6 +45,10 @@ docker-create:
 	sudo docker create -t ${DOCKEXP} ${DOCKVOLBASE} ${DOCKIMG} >.dockerinstance
 	@echo "Container `cat .dockerinstance` created"
 
+docker-inspect:
+	@echo "Inspect data containers"
+	sudo docker inspect ${DOCKIMG}
+
 docker-purge:
 	-sudo docker rm -v $$(docker ps -a -q -f status=exited)
 	-sudo docker rm -v $$(docker ps -a -q -f status=created)
