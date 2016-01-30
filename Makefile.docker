@@ -15,38 +15,34 @@ DOCKID  := $(shell sudo docker ps|grep 8883|grep 8882|cut -d " " -f1)
 DOCKID2 := $(shell sudo docker ps|grep 1883|grep 22|cut -d " " -f1)
 DOCKEXP := -p ${DOCKIPF}8880:8880 -p ${DOCKIPF}8881:8081 -p ${DOCKIPF}8882:22 -p ${DOCKIPF}8883:1883 -p ${DOCKIPF}8884:9001 -p ${DOCKIPF}8885:8085 -p ${DOCKIPF}8886:8086
 DOCKDIR := /opt/janitoo/docker
-DOCKPTH :=  /var/log/ /root/.ssh /etc/nginx/conf.d/ /etc/mosquitto/ /var/lib/mosquitto/ /etc/supervisor/ /janitoo/home/ /janitoo/etc/
-DOCKVOL := -v $(DOCKDIR)/root/.ssh/:/root/.ssh/ -v $(DOCKDIR)/var/log/:/var/log/ -v $(DOCKDIR)/etc/nginx/conf.d/:/etc/nginx/conf.d/ \
-	-v $(DOCKDIR)/etc/mosquitto/:/etc/mosquitto/ -v $(DOCKDIR)/var/lib/mosquitto/:/var/lib/mosquitto/ \
-	-v $(DOCKDIR)/etc/supervisor/:/etc/supervisor/ \
-	-v $(DOCKDIR)/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/janitoo/etc/:/opt/janitoo/etc/
-#~ DOCKVOL := -v $(DOCKDIR)/var/log/nginx/:/var/log/nginx/ \
-	#~ -v $(DOCKDIR)/var/data/mosquitto/:/var/data/mosquitto/ -v $(DOCKDIR)/var/log/mosquitto/:/var/log/mosquitto/ \
-	#~ -v $(DOCKDIR)/var/log/supervisor/:/var/log/supervisor/ \
-	#~ -v $(DOCKDIR)/janitoo/home/:/opt/janitoo/home/ -v $(DOCKDIR)/janitoo/log/:/opt/janitoo/log/
+DOCKVOLBASE := -v /root/.ssh/ -v $(DOCKDIR)/var/lib/mosquitto/ -v /opt/janitoo/home/ -v /opt/janitoo/etc/ -v /etc/supervisor/
+DOCKVOLEXT := -v $(DOCKDIR)/janitoo/src/:/opt/janitoo/src/
 
 docker-vols:
 	@echo "Make locals volumes for docker"
-	-mkdir -p $(DOCKDIR)
-	-for dir in $(DOCKPTH); do  mkdir -p $(DOCKDIR)/$$dir; done
+	#~ -mkdir -p $(DOCKDIR)
+	#~ -mkdir -p $(DOCKDIR)/src
 
 docker-conf: docker-vols
 	@echo "Retrieve configuration from live container"
-	sudo docker run -d -t ${DOCKEXP} ${DOCKIMG}
+	sudo docker start ${DOCKCNT}
 	sleep 5
 	-ssh-copy-id root@${DOCKIP} -p 8882
-	-scp -r -P 8882 root@${DOCKIP}:/root/.ssh/* $(DOCKDIR)/root/.ssh/
-	-scp -r -P 8882 root@${DOCKIP}:/etc/supervisor/* $(DOCKDIR)/etc/supervisor/
-	-scp -r -P 8882 root@${DOCKIP}:/etc/nginx/* $(DOCKDIR)/etc/nginx/
-	-scp -r -P 8882 root@${DOCKIP}:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
-	-scp -r -P 8882 root@${DOCKIP}:/var/log/* $(DOCKDIR)/var/log/
-	-scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/etc/* $(DOCKDIR)/janitoo/etc/
-	sudo docker stop `sudo docker ps|grep 8883|grep 8882|cut -d " " -f1`
-	sudo chown -Rf root:root /opt/janitoo/docker/
+	sleep 1
+	-sudo docker stop ${DOCKCNT}
+	-sudo docker stop ${DOCKID}
+	#~ -scp -r -P 8882 root@${DOCKIP}:/root/.ssh/* $(DOCKDIR)/root/.ssh/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/supervisor/* $(DOCKDIR)/etc/supervisor/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/nginx/* $(DOCKDIR)/etc/nginx/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/etc/mosquitto/* $(DOCKDIR)/etc/mosquitto/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/var/log/* $(DOCKDIR)/var/log/
+	#~ -scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/etc/* $(DOCKDIR)/janitoo/etc/
+	#~ sudo docker stop `sudo docker ps|grep 8883|grep 8882|cut -d " " -f1`
+	#~ sudo chown -Rf root:root /opt/janitoo/docker/
 
 docker-create:
 	@echo "Create new container"
-	sudo docker create -t ${DOCKEXP} ${DOCKVOL} ${DOCKIMG} >.dockerinstance
+	sudo docker create -t ${DOCKEXP} ${DOCKVOLBASE} ${DOCKIMG} >.dockerinstance
 	@echo "Container `cat .dockerinstance` created"
 
 docker-purge:
@@ -63,7 +59,7 @@ docker-pull:
 	sudo docker pull ${DOCKIMG}
 
 docker-shell:
-	sudo docker run -i -t ${DOCKEXP} ${DOCKVOL} ${DOCKCNT} /root/shell.sh
+	sudo docker run -i -t ${DOCKEXP} ${DOCKVOLBASE} ${DOCKCNT} /root/shell.sh
 
 docker-ps:
 	sudo docker ps -a
