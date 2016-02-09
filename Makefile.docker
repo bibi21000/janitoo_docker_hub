@@ -3,6 +3,8 @@
 
 DOCKIMG := bibi21000/janitoo_stable
 DOCKIP  := 127.0.0.1
+DOCKDIR := /opt/janitoo/docker
+SRCDIR  := /opt/janitoo/src
 
 -include Makefile.local
 
@@ -14,7 +16,6 @@ DOCKCNT := $(shell cat .dockerinstance 2>/dev/null)
 DOCKID  := $(shell sudo docker ps|grep 8883|grep 8882|cut -d " " -f1)
 DOCKID2 := $(shell sudo docker ps|grep 1883|grep 22|cut -d " " -f1)
 DOCKEXP := -p ${DOCKIPF}8880:8880 -p ${DOCKIPF}8881:8081 -p ${DOCKIPF}8882:22 -p ${DOCKIPF}8883:1883 -p ${DOCKIPF}8884:9001 -p ${DOCKIPF}8885:8085 -p ${DOCKIPF}8886:8086
-DOCKDIR := /opt/janitoo/docker
 DOCKVOLBASE := -v /root/.ssh/ -v $(DOCKDIR)/var/lib/mosquitto/ -v /opt/janitoo/home/ -v /opt/janitoo/etc/ -v /etc/supervisor/
 DOCKVOLEXT := -v $(DOCKDIR)/janitoo/src/:/opt/janitoo/src/
 
@@ -39,6 +40,18 @@ docker-conf: docker-vols
 	#~ -scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/etc/* $(DOCKDIR)/janitoo/etc/
 	#~ sudo docker stop `sudo docker ps|grep 8883|grep 8882|cut -d " " -f1`
 	#~ sudo chown -Rf root:root /opt/janitoo/docker/
+
+docker-git:
+	@echo "Retrieve janitoo git repositories from live container"
+	[ -d $(SRCDIR) ] && echo "$(SRCDIR) already exist. Can't continue !" && exit 1
+	mkdir $(SRCDIR)
+	sudo docker start ${DOCKCNT}
+	sleep 5
+	-scp -r -P 8882 root@${DOCKIP}:/opt/janitoo/src/* $(SRCDIR)/
+	sleep 1
+	-sudo docker stop ${DOCKCNT}
+	-sudo docker stop ${DOCKID}
+	-sudo chown -Rf `whoami`:`whoami` /opt/janitoo/docker/
 
 docker-create:
 	@echo "Create new container"
