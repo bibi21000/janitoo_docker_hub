@@ -168,6 +168,13 @@ travis-deps: deps
 	@echo
 	@echo "Travis dependencies for ${MODULENAME} installed."
 
+docker-tests:
+	@echo
+	@echo "Docker tests for ${MODULENAME} start."
+	-[ -f tests/test_docker.py ] && $(NOSE) $(NOSEOPTS) $(NOSEDOCKER) tests/test_docker.py
+	@echo
+	@echo "Docker tests for ${MODULENAME} finished."
+
 tests:
 	@echo "Tests for ${MODULENAME} started."
 	@echo
