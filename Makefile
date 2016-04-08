@@ -168,6 +168,10 @@ travis-deps: deps
 	@echo
 	@echo "Travis dependencies for ${MODULENAME} installed."
 
+docker-inst:
+	@echo "Configure Docker image."
+	@echo
+
 docker-tests:
 	@echo
 	@echo "Docker tests for ${MODULENAME} start."
