@@ -162,9 +162,10 @@ develop: docker_apt_list
 	@echo "Dependencies for ${MODULENAME} finished."
 
 directories:
-	-mkdir /opt/janitoo
+	-sudo mkdir /opt/janitoo
+	-sudo chown -Rf ${USER}:${USER} /opt/janitoo
 	-for dir in cache cache/janitoo_manager home log run etc init; do mkdir /opt/janitoo/$$dir; done
-	-chown -Rf ${USER}:${USER} /opt/janitoo
+
 
 travis-deps: deps
 	sudo apt-get -y install libevent-2.0-5 mosquitto
