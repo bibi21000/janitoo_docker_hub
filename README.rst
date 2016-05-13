@@ -8,7 +8,6 @@ It will install the last packages of docker using this method : https://docs.doc
 
 Download
 ========
-
 Docker needs to be root so it is launch with sudo. You can bypass the password ask updating your sudoers configuration. Or use :
 
 .. code-block:: bash
@@ -104,7 +103,6 @@ You are ready to play with thr janitoo live demo. Please keep in minf that data 
 
 First installation
 ==================
-
 At first, if you don't have a ssh key, generate one :
 
 .. code-block:: bash
@@ -144,7 +142,6 @@ You can check that ssh, mosquitto, nginx are running.
 
 Start it
 ========
-
 You are ready to start janitoo in the background :
 
 
@@ -181,7 +178,6 @@ By default, the janitoo's image listen on all interface on ports :
 
 Update it
 =========
-
 make sshkey-copy
 
 /usr/bin/ssh-copy-id:
@@ -203,3 +199,7 @@ ERROR: Host key verification failed.
 Make a copy paste :
 
 ssh-keygen -f "/home/xxxxxxxxxxx/.ssh/known_hosts" -R [127.0.0.1]:8882
+
+Documentation
+=============
+You can browse online documentation here : https://bibi21000.github.io/janitoo_docker_hub/.
