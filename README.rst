@@ -207,3 +207,7 @@ ssh-keygen -f "/home/xxxxxxxxxxx/.ssh/known_hosts" -R [127.0.0.1]:8882
 Documentation
 =============
 You can browse online documentation here : https://bibi21000.github.io/janitoo_docker_hub/.
+
+Tutorial
+========
+You can find a tutorial here : https://bibi21000.github.io/janitoo_tutorial/.
